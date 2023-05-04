@@ -1,6 +1,6 @@
 {
   "name": "@nxg-org/mineflayer-mitm-proxy",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "main": "lib/index.js",
   "author": "GenerelSchwerz",
   "license": "MIT",
