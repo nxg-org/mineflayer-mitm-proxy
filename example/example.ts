@@ -8,17 +8,17 @@ import { GotoPlacePlugin } from "./plugins/basicGoto";
 const botOpts: BotOptions = {
   username: "generelSchwerz",
   auth: "microsoft",
-  host: "2b2t.org",
+  host: "localhost",
   version: "1.12.2",
 };
 
 const serverOpts: ServerOptions = {
   version: "1.12.2",
+  port: 25566
 };
 
 const server = new ServerBuilder(serverOpts, botOpts)
   .addPlugin(new GotoPlacePlugin())
-  .setSettings({})
   .build();
 
 server.start();
