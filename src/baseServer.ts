@@ -100,7 +100,7 @@ export class ServerBuilder<Opts extends IProxyServerOpts, Emits extends IProxySe
 
   public addPlugin<O, L, E, NeedsSettings = {} extends Opts & O ? true : false>(
     this: ServerBuilder<Opts, Emits, AppliedSettings>,
-    plugin: Emits extends L ? ProxyServerPlugin<O, L, E> : never,
+    plugin: Emits extends L ? ProxyServerPlugin<O, L, E> : never
   ): ServerBuilder<Opts & O, Emits & E, NeedsSettings> {
     this.plugins.push(plugin);
     return this as any;
@@ -119,14 +119,14 @@ export class ServerBuilder<Opts extends IProxyServerOpts, Emits extends IProxySe
     return this as any;
   }
 
-  // public addPluginStatic<O, E>(
-  //   this: ServerBuilder<Opts, Emits, false>,
-  //   plugin: typeof ProxyServerPlugin<O, any, E>
-  // ): ServerBuilder<Opts & O, Emits & E, AppliedSettings> {
-  //   const build = new plugin();
-  //   this.plugins.push(build);
-  //   return this as any;
-  // }
+  public addPluginStatic<O, L, E, NeedsSettings = {} extends Opts & O ? true : false>(
+    this: ServerBuilder<Opts, Emits, AppliedSettings>,
+    plugin: new () => ProxyServerPlugin<O,L,E>
+  ): ServerBuilder<Opts & O, Emits & E, NeedsSettings> {
+    const build = new plugin();
+    this.plugins.push(build);
+    return this as any;
+  }
 
   public setSettings(settings: Opts): ServerBuilder<Opts, Emits, true> {
     this._settings = settings;
@@ -241,7 +241,7 @@ export class ProxyServer<
         );
 
         if (typeof event === "string" && event.startsWith("botevent_")) {
-          args.splice(0,1)
+          args.splice(0, 1);
           this.logger.log(event.replace("botevent_", ""), "remoteBotEvents", args);
           return;
         }
@@ -259,8 +259,8 @@ export class ProxyServer<
     inserting.onLoad(this as any);
     this.plugins.set(inserting.constructor.name, inserting as any);
     if (inserting.universalCmds != null) {
-      this.cmdHandler.loadProxyCommands(inserting.universalCmds)
-      this.cmdHandler.loadDisconnectedCommands(inserting.universalCmds)
+      this.cmdHandler.loadProxyCommands(inserting.universalCmds);
+      this.cmdHandler.loadDisconnectedCommands(inserting.universalCmds);
     }
     if (inserting.connectedCmds != null) this.cmdHandler.loadProxyCommands(inserting.connectedCmds);
     if (inserting.disconnectedCmds != null) this.cmdHandler.loadDisconnectedCommands(inserting.disconnectedCmds);
@@ -268,24 +268,30 @@ export class ProxyServer<
     return this as any;
   }
 
-  public unloadPlugin(removing: ProxyServerPlugin<any, any>): void {
-    this.plugins.get(removing.constructor.name)?.onUnload(this as any);
-    this.plugins.delete(removing.constructor.name);
+  public unloadPlugin(removing: typeof ProxyServerPlugin<any, any, any>): void {
+    this.plugins.get(removing.name)?.onUnload(this as any);
+    this.plugins.delete(removing.name);
   }
 
-  public hasPlugin(removing: ProxyServerPlugin<any, any>): boolean {
-    return Boolean(this.plugins.get(removing.constructor.name));
+  public hasPlugin(checking: typeof ProxyServerPlugin<any, any, any>): boolean {
+    return Boolean(this.plugins.get(checking.name));
   }
 
-  public enablePlugin(plugin: ProxyServerPlugin<any, any>): boolean {
-    const gotten = this.plugins.get(plugin.constructor.name);
+  public getPluginInstance<Val extends typeof ProxyServerPlugin<any, any, any>>(
+    getting: Val
+  ): InstanceType<Val> | undefined {
+    return this.plugins.get(getting.name) as any;
+  }
+
+  public enablePlugin(plugin: typeof ProxyServerPlugin<any, any, any>): boolean {
+    const gotten = this.plugins.get(plugin.name);
     if (gotten == null) return false;
     gotten.enable();
     return true;
   }
 
-  public disablePlugin(plugin: ProxyServerPlugin<any, any>): boolean {
-    const gotten = this.plugins.get(plugin.constructor.name);
+  public disablePlugin(plugin: typeof ProxyServerPlugin<any, any, any>): boolean {
+    const gotten = this.plugins.get(plugin.name);
     if (gotten == null) return false;
     gotten.disable();
     return true;
@@ -414,7 +420,7 @@ export class ProxyServer<
     else this.notConnectedLoginHandler(actualUser);
   };
 
-  protected async remoteClientDisconnect (reason: string, info: string | Error) {
+  protected async remoteClientDisconnect(reason: string, info: string | Error) {
     if (this.remoteBot == null) return; // assume we've already exited ( we want to leave early on kicks )
 
     this.endBotLogic();
@@ -423,9 +429,9 @@ export class ProxyServer<
 
     this._remoteIsConnected = false;
     this._conn = null;
-  };
+  }
 
-  public closeConnections (closeReason: string, closeRemote = false, additional?: string) {
+  public closeConnections(closeReason: string, closeRemote = false, additional?: string) {
     const reason = additional ? closeReason + "\n\nReason: " + additional : closeReason;
 
     this.emit("closingConnections" as any, reason);
@@ -437,14 +443,14 @@ export class ProxyServer<
     if (closeRemote) {
       this.disconnectRemote(closeReason);
     }
-  };
+  }
 
   protected disconnectRemote(reason: string) {
     if (this._conn != null) {
       this._conn.stateData.bot._client.end("[2B2W]: " + reason);
       this._conn.pclients.forEach(this._conn.detach.bind(this._conn));
     }
-  };
+  }
 
   private readonly reconnectAllClients = (conn: Conn) => {
     Object.values(this._rawServer.clients).forEach((c) => {
@@ -478,7 +484,7 @@ export class ProxyServer<
 
   protected notConnectedLoginHandler = async (actualUser: ServerClient) => {
     for (const plugin of this.plugins.values()) {
-      const res = await plugin.notConnectedLoginHandler?.(actualUser)
+      const res = await plugin.notConnectedLoginHandler?.(actualUser);
       if (res != null) return;
     }
 
