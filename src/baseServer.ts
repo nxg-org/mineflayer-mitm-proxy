@@ -83,6 +83,7 @@ export class ServerBuilder<Opts extends IProxyServerOpts, Emits extends IProxySe
   constructor(public readonly lsOpts: ServerOptions, public readonly bOpts: BotOptions, other: OtherProxyOpts = {}) {
     this._plugins = [];
     this._otherSettings = other;
+    this._settings = {} as any;
   }
 
   public get appliedSettings(): AppliedSettings {
@@ -97,10 +98,10 @@ export class ServerBuilder<Opts extends IProxyServerOpts, Emits extends IProxySe
     return this._plugins;
   }
 
-  public addPlugin<O, L, E>(
+  public addPlugin<O, L, E, NeedsSettings = {} extends Opts & O ? true : false>(
     this: ServerBuilder<Opts, Emits, AppliedSettings>,
     plugin: Emits extends L ? ProxyServerPlugin<O, L, E> : never,
-  ): ServerBuilder<Opts & O, Emits & E, false> {
+  ): ServerBuilder<Opts & O, Emits & E, NeedsSettings> {
     this.plugins.push(plugin);
     return this as any;
   }
@@ -113,7 +114,7 @@ export class ServerBuilder<Opts extends IProxyServerOpts, Emits extends IProxySe
   >(
     this: ServerBuilder<Opts, Emits, AppliedSettings>,
     ...plugins: Plugins
-  ): ServerBuilder<Opts & O, Emits & E, false> {
+  ): ServerBuilder<Opts & O, Emits & E, NeedsSettings> {
     this._plugins = this.plugins.concat(...plugins);
     return this as any;
   }
