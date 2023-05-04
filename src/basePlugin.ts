@@ -26,6 +26,7 @@ export abstract class ProxyServerPlugin<
   private _enabled = true;
 
   public declare _server: ProxyServer<Opts, Events>;
+  public declare universalCmds?: CommandMap;
   public declare connectedCmds?: CommandMap;
   public declare disconnectedCmds?: CommandMap;
 

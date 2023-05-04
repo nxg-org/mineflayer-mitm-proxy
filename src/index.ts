@@ -1,4 +1,4 @@
 export { ServerBuilder, IProxyServerEvents, IProxyServerOpts, ProxyServer } from "./baseServer";
 export { ProxyServerPlugin } from "./basePlugin";
-export { CommandHandler } from "./commandHandler";
-export { Logger } from "./logger";
+export { CommandHandler, CommandMap } from "./commandHandler";
+export { Logger, LogConfig } from "./logger";

@@ -186,6 +186,7 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
           matches.push(cmd)
         }
       }
+      cmds.sort();
       pclient.write('tab_complete', { matches })
     }
   }

@@ -258,6 +258,10 @@ export class ProxyServer<
   ): ProxyServer<Opts, Events> {
     inserting.onLoad(this as any);
     this.plugins.set(inserting.constructor.name, inserting as any);
+    if (inserting.universalCmds != null) {
+      this.cmdHandler.loadProxyCommands(inserting.universalCmds)
+      this.cmdHandler.loadDisconnectedCommands(inserting.universalCmds)
+    }
     if (inserting.connectedCmds != null) this.cmdHandler.loadProxyCommands(inserting.connectedCmds);
     if (inserting.disconnectedCmds != null) this.cmdHandler.loadDisconnectedCommands(inserting.disconnectedCmds);
 
