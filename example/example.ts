@@ -2,6 +2,7 @@ import { ServerOptions } from "minecraft-protocol";
 import { BotOptions } from "mineflayer";
 import { ServerBuilder } from "../src/baseServer";
 import { GotoPlacePlugin } from "./plugins/basicGoto";
+import findEntity from "./plugins/findEntity";
 
 
 
@@ -19,6 +20,7 @@ const serverOpts: ServerOptions = {
 
 const server = new ServerBuilder(serverOpts, botOpts)
   .addPlugin(new GotoPlacePlugin())
+  .addPlugin(findEntity)  
   .build();
 
 server.start();

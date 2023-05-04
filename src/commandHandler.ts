@@ -97,7 +97,6 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
         if (cmd.allowed != null && !cmd.allowed(client)) delete cmds[key]
       }
     }
-
     return cmds
   }
 
@@ -222,7 +221,9 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
       }
     }
 
+    
     data.matches = data.matches.concat(...matches)
+    data.matches.sort();
     return data
   }
 
@@ -239,6 +240,7 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
         matches.push(cmd)
       }
     }
+    matches.sort();
     client.write('tab_complete', { matches })
   }
 
@@ -285,10 +287,11 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
   }
 
   printHelp = (client: ServerClient | Client) => {
-    const cmdRunner = this.getActiveCmds(client)
+    const cmds = Object.entries(this.getActiveCmds(client))
+    cmds.sort();
+
     this.srv.message(client, '§6---------- Proxy Commands: ------------- ', false)
-    for (const cmdKey in cmdRunner) {
-      const cmd = cmdRunner[cmdKey]
+    for (const [cmdKey, cmd] of cmds) {
 
       let toSend
       if (cmd instanceof Function) {

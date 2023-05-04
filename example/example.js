@@ -1,5 +1,6 @@
 const { ServerBuilder } = require('../lib/baseServer');
 const { GotoPlacePlugin } = require('./plugins/basicGoto');
+const { default: findEntity } = require('./plugins/findEntity');
 
 
 const botOpts = {
@@ -16,6 +17,7 @@ const serverOpts = {
 
 const server = new ServerBuilder(serverOpts, botOpts)
   .addPlugin(new GotoPlacePlugin())
+  .addPlugin(findEntity)
   .setSettings({})
   .build();
 
