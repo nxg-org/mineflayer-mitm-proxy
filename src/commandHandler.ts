@@ -95,13 +95,13 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
     }
   }
 
-  public getActiveCmds (client: Client) {
+  public getActiveCmds (client: Client, override = false) {
     const cmds = this.srv.isProxyConnected() ? this.proxyCmds : this.disconnectedCmds
     const obj: CommandMap = {};
     for (const [key, cmd] of Object.entries(cmds)) {
       if (typeof cmd !== 'function') {
-        if (cmd.allowedIf != null) {
-         
+        if (cmd.allowedIf != null && !override) {
+          
           if (typeof cmd.allowedIf === 'function' && !cmd.allowedIf(client))
             continue
           else switch (cmd.allowedIf) {
@@ -114,10 +114,8 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
           }
         }
       } 
-      console.log("adding", key)
       obj[key] = cmd;
     }
-    console.log(obj)
     return obj
   }
 
@@ -328,7 +326,7 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
   }
 
   public printUsage = (client: ServerClient | Client, wantedCmd: string) => {
-    const cmdRunner = this.getActiveCmds(client)
+    const cmdRunner = this.getActiveCmds(client, true)
     if (!wantedCmd) return this.srv.message(client, '[pusage] Unknown command!')
     if (wantedCmd.startsWith(this.prefix)) wantedCmd.replace(this.prefix, '')
     const cmd = cmdRunner[this.prefix + wantedCmd]
