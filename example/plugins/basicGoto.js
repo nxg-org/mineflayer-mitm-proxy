@@ -1,6 +1,7 @@
 const { ProxyServerPlugin, CmdPerm } = require('../../lib')
 const { goals, pathfinder } = require('mineflayer-pathfinder')
 
+
 /**
  * Gen here again.
  *

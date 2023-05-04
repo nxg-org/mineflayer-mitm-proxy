@@ -277,9 +277,13 @@ export class ProxyServer<
     return Boolean(this.plugins.get(checking.name));
   }
 
-  public getPluginInstance<Val extends typeof ProxyServerPlugin<any, any, any>>(
-    getting: Val
-  ): InstanceType<Val> | undefined {
+
+  public getPlugin(getting: string): InstanceType<typeof ProxyServerPlugin<any, any, any>> | undefined;
+  public getPlugin<Val extends typeof ProxyServerPlugin<any, any, any>>(getting: Val): InstanceType<Val> | undefined;
+  public getPlugin<Val extends typeof ProxyServerPlugin<any, any, any>>(
+    getting: Val | string,
+  ): typeof getting extends Val ? InstanceType<Val> : InstanceType<typeof ProxyServerPlugin<any, any, any>> | undefined {
+    if (typeof getting === 'string') return this.plugins.get(getting) as any
     return this.plugins.get(getting.name) as any;
   }
 
