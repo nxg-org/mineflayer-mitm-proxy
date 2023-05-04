@@ -1,5 +1,5 @@
 import { Client } from "@icetank/mcproxy"
-import { CommandMap } from "../../src/commandHandler"
+import { CmdPerm, CommandMap } from "../../src/commandHandler"
 import { ProxyServerPlugin } from "../../src/basePlugin"
 import {goals } from 'mineflayer-pathfinder'
 import { Bot } from "mineflayer"
@@ -24,19 +24,22 @@ export class GotoPlacePlugin extends ProxyServerPlugin {
     goto: {
       usage: 'goto <x> <y> <z>',
       description: 'go from point A to point B',
-      callable: this.gotoFunc.bind(this)
+      callable: this.gotoFunc.bind(this),
+      allowedIf: CmdPerm.LINKED
     },
 
     gotoXZ: {
       usage: 'gotoXZ <x> <z>',
       description: 'go from point A to point B, XZ',
-      callable: this.gotoXZFunc.bind(this)
+      callable: this.gotoXZFunc.bind(this),
+      allowedIf: CmdPerm.LINKED
     },
 
     pathstop: {
       usage: 'pathstop',
       description: 'Stop mineflayer-pathfinder',
-      callable: this.stop.bind(this)
+      callable: this.stop.bind(this),
+      allowedIf: CmdPerm.UNLINKED
     }
   }
 

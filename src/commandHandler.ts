@@ -97,22 +97,24 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
 
   public getActiveCmds (client: Client) {
     const cmds = this.srv.isProxyConnected() ? this.proxyCmds : this.disconnectedCmds
-
+    const obj: CommandMap = {};
     for (const [key, cmd] of Object.entries(cmds)) {
       if (typeof cmd !== 'function') {
         if (cmd.allowedIf != null) {
+          console.log(cmd.allowedIf)
           if (typeof cmd.allowedIf === 'function' && !cmd.allowedIf(client))
-            delete cmds[key]
+            continue
           else switch (cmd.allowedIf) {
             case CmdPerm.LINKED:
-              if (client != this.srv.controllingPlayer) delete cmds[key]
+              if (client !== this.srv.controllingPlayer) continue
               break;
             case CmdPerm.UNLINKED:
-              if (client == this.srv.controllingPlayer) delete cmds[key]
+              if (client === this.srv.controllingPlayer) continue
               break;
           }
         }
-      }
+      } 
+      obj[key] = cmd;
     }
     return cmds
   }
