@@ -305,8 +305,9 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
     return !!cmdRunner.connected[cmd] || !!cmdRunner.disconnected[cmd]
   }
 
-  printHelp = (client: ServerClient | Client) => {
-    const cmds = Object.entries(this.getActiveCmds(client))
+  printHelp = (client: ServerClient | Client, full: string) => {
+    const boolFull = full === "full"
+    const cmds = Object.entries(this.getActiveCmds(client, boolFull))
     cmds.sort();
 
     this.srv.message(client, '§6---------- Proxy Commands: ------------- ', false)
