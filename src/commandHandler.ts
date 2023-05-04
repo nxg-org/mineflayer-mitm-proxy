@@ -101,22 +101,24 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
     for (const [key, cmd] of Object.entries(cmds)) {
       if (typeof cmd !== 'function') {
         if (cmd.allowedIf != null) {
-          console.log(cmd.allowedIf)
+         
           if (typeof cmd.allowedIf === 'function' && !cmd.allowedIf(client))
             continue
           else switch (cmd.allowedIf) {
             case CmdPerm.LINKED:
               if (client !== this.srv.controllingPlayer) continue
-              break;
+              break
             case CmdPerm.UNLINKED:
               if (client === this.srv.controllingPlayer) continue
-              break;
+              break
           }
         }
       } 
+      console.log("adding", key)
       obj[key] = cmd;
     }
-    return cmds
+    console.log(obj)
+    return obj
   }
 
   loadProxyCommands (obj: CommandMap) {
