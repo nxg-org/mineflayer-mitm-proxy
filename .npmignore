@@ -1,0 +1,8 @@
+# specifically shouldn't be published to npm
+.gitignore
+.github/
+src/
+examples/
+logs/
+node_modules/
+tsconfig.json

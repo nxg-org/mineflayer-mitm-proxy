@@ -1,0 +1,24 @@
+{
+  "name": "@nxg-org/mineflayer-mitm-proxy",
+  "version": "0.1.6",
+  "main": "lib/index.js",
+  "author": "GenerelSchwerz",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "build": "npx tsc",
+    "prepublish": "npm run build"
+  },
+  "dependencies": {
+    "@icetank/mcproxy": "^1.0.2",
+    "eventemitter2": "^6.4.9",
+    "minecraft-protocol": "^1.41.2",
+    "strict-event-emitter-types": "^2.0.0",
+    "ts-deepmerge": "^6.0.3",
+    "ts-luxon": "^4.2.2"
+  },
+  "devDependencies": {
+    "mineflayer-pathfinder": "^2.4.2",
+    "typescript": "^5.0.4"
+  }
+}
