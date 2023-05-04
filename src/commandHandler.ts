@@ -5,6 +5,12 @@ import { Client as ProxyClient, PacketMiddleware } from '@icetank/mcproxy'
 import { sleep } from './utils'
 import type { Vec3 } from 'vec3'
 
+
+export enum CmdPerm {
+  LINKED =    1 << 0,
+  UNLINKED =  1 << 1,
+}
+
 interface CommandHandlerEvents {
   command: (cmd: string, func?: Function) => void
 }
@@ -14,7 +20,7 @@ type CommandInfo =
   | {
     usage?: string
     description?: string
-    allowed?: (client: Client) => boolean
+    allowedIf?: ((client: Client) => boolean) | CmdPerm
     callable: CommandFunc
   }
   | CommandFunc
@@ -94,7 +100,18 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
 
     for (const [key, cmd] of Object.entries(cmds)) {
       if (typeof cmd !== 'function') {
-        if (cmd.allowed != null && !cmd.allowed(client)) delete cmds[key]
+        if (cmd.allowedIf != null) {
+          if (typeof cmd.allowedIf === 'function' && !cmd.allowedIf(client))
+            delete cmds[key]
+          else switch (cmd.allowedIf) {
+            case CmdPerm.LINKED:
+              if (client != this.srv.controllingPlayer) delete cmds[key]
+              break;
+            case CmdPerm.UNLINKED:
+              if (client == this.srv.controllingPlayer) delete cmds[key]
+              break;
+          }
+        }
       }
     }
     return cmds
