@@ -2,13 +2,12 @@
 // "emitters" provide custom events, "listeners" do not (can listen to custom though)
 
 import { Conn } from "@icetank/mcproxy";
-import { ServerClient } from "minecraft-protocol";
+import { Client, ServerClient } from "minecraft-protocol";
 import { Bot } from "mineflayer";
 import merge from "ts-deepmerge";
 import { Arguments } from "typed-emitter";
 import { IProxyServerEvents, IProxyServerOpts, ProxyServer } from "./baseServer";
 import { CommandMap } from "./commandHandler";
-
 
 // TODO: Separate plugins into "emitters" and "listeners"
 // "emitters" provide custom events, "listeners" do not (can listen to custom though)
@@ -49,21 +48,23 @@ export abstract class ProxyServerPlugin<
   }
 
   // potential listener methods
-  onPreStart?: (conn: Conn) => void;
-  onPostStart?: () => void;
-  onPreStop?: () => void;
-  onPostStop?: () => void;
-  onBotAutonomous?: (bot: Bot) => void;
-  onBotControlled?: (bot: Bot) => void;
-  onProxySetup?: (conn: Conn) => void;
-  onOptionValidation?: (bot: Bot) => void;
-  onInitialBotSetup?: (bot: Bot) => void;
-  onClosingConnections?: (reason: string) => void;
-  onPlayerConnected?: (client: ServerClient, remoteConnected: boolean) => void;
-  whileConnectedLoginHandler?: (player: ServerClient) => Promise<boolean> | boolean;
-  notConnectedLoginHandler?: (player: ServerClient) => Promise<boolean> | boolean;
-  onRemoteKick?: (reason: string) => void;
-  onRemoteDisconnect?: (type: "kicked" | "end" | "error", info: string | Error) => void;
+  onPreStart?(conn: Conn): void;
+  onPostStart?(): void;
+  onPreStop?(): void;
+  onPostStop?(): void;
+  onBotAutonomous?(bot: Bot): void;
+  onBotControlled?(bot: Bot): void;
+  onProxySetup?(conn: Conn): void;
+  onOptionValidation?(bot: Bot): void;
+  onInitialBotSetup?(bot: Bot): void;
+  onLinking?(client: Client): void;
+  onUnlinking?(client: Client): void;
+  onClosingConnections?(reason: string): void;
+  onPlayerConnected?(client: ServerClient, remoteConnected: boolean): void;
+  whileConnectedLoginHandler?(player: ServerClient): Promise<boolean> | boolean;
+  notConnectedLoginHandler?(player: ServerClient): Promise<boolean> | boolean;
+  onRemoteKick?(reason: string): void;
+  onRemoteDisconnect?(type: "kicked" | "end" | "error", info: string | Error): void;
 
   private readonly listenerMap: Map<keyof ListensTo, Array<{ original: Function; ref: Function }>> = new Map();
 
@@ -134,6 +135,8 @@ export abstract class ProxyServerPlugin<
     if (this.onProxySetup != null) this.serverOn("proxySetup", this.onProxySetup as any);
     if (this.onBotAutonomous != null) this.serverOn("botAutonomous", this.onBotAutonomous as any);
     if (this.onBotControlled != null) this.serverOn("botControlled", this.onBotControlled as any);
+    if (this.onLinking != null) this.serverOn("linking", this.onLinking as any);
+    if (this.onUnlinking != null) this.serverOn("unlinking", this.onUnlinking as any);
     if (this.onClosingConnections != null) this.serverOn("closingConnections", this.onClosingConnections as any);
     if (this.onPlayerConnected != null) this.serverOn("playerConnected", this.onPlayerConnected as any);
     if (this.onOptionValidation != null) this.serverOn("optionValidation", this.onOptionValidation as any);

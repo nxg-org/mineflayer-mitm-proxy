@@ -49,6 +49,8 @@ export type IProxyServerEvents = PrefixedBotEvents & {
   optionValidation: (bot: Bot) => void;
   initialBotSetup: (bot: Bot) => void;
   proxySetup: (conn: Conn) => void;
+  linking: (client: Client) => void;
+  unlinking: (client: Client) => void;
   botAutonomous: (bot: Bot) => void;
   botControlled: (bot: Bot) => void;
   starting: (conn: Conn) => void;
@@ -536,5 +538,38 @@ export class ProxyServer<
     Object.values(this._rawServer.clients).forEach((c) => {
       this.message(c, message, prefix, allowFormatting, position);
     });
+  }
+
+  // ======================= //
+  //     client utils        //
+  // ======================= //
+
+  public inControl(client: Client): boolean {
+    return this.controllingPlayer === client
+  }
+
+
+  /**
+   * Unlinks client from remote connection, releasing control.
+   * @param client 
+   * @returns 
+   */
+  public unlink(client: Client): boolean {
+    if (this.conn == null) throw new Error('Unlinking when remote connection is not present!')
+    if (client !== this.controllingPlayer) return false;
+    this.conn.unlink();
+    this.beginBotLogic();
+    return true;
+  }
+
+  /**
+   * Establishes connection to the remote connection, transferring control.
+   */
+  public link(client: Client): boolean {
+    if (this.conn == null) throw new Error('Unlinking when remote connection is not present!')
+    if (client === this.controllingPlayer) return false;
+    this.endBotLogic();
+    this.conn.link(client as unknown as ProxyClient);
+    return true;
   }
 }
