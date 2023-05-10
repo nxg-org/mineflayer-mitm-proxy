@@ -334,7 +334,8 @@ export class ProxyServer<
     if (this.isProxyConnected()) return this._conn!;
     this.manuallyStopped = false;
     this._conn = new Conn(this.bOpts, this.otherOpts.cOpts);
-    this.reconnectAllClients(this._conn);
+    this.closeConnections('Starting the server!')
+    // this.reconnectAllClients(this._conn);
     this.emit("starting" as any, this._conn as any);
     this.setup();
     this.emit("started" as any);
@@ -458,14 +459,14 @@ export class ProxyServer<
     }
   }
 
-  private readonly reconnectAllClients = (conn: Conn) => {
-    Object.values(this._rawServer.clients).forEach((c) => {
-      this.broadcastMessage("[INFO] Bot has started!");
-      this.broadcastMessage("Reconnect to see the new bot.");
-      this.cmdHandler.decoupleClientCmds(c as unknown as ProxyClient);
-      this.cmdHandler.updateClientCmds(c as unknown as ProxyClient);
-    });
-  };
+  // private readonly reconnectAllClients = (conn: Conn) => {
+  //   Object.values(this._rawServer.clients).forEach((c) => {
+  //     this.broadcastMessage("[INFO] Bot has started!");
+  //     this.broadcastMessage("Reconnect to see the new bot.");
+  //     this.cmdHandler.decoupleClientCmds(c as unknown as ProxyClient);
+  //     this.cmdHandler.updateClientCmds(c as unknown as ProxyClient);
+  //   });
+  // };
 
   /**
    * Default login handler. This can/will be overriden by plugins.

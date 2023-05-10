@@ -16,25 +16,29 @@ const { goals, pathfinder } = require('mineflayer-pathfinder')
  */
 class GotoPlacePlugin extends ProxyServerPlugin {
   connectedCmds = {
-    goto: {
-      usage: 'goto <x> <y> <z>',
-      description: 'go from point A to point B',
-      callable: this.gotoFunc.bind(this),
-      allowedIf: CmdPerm.LINKED
-    },
 
-    gotoXZ: {
-      usage: 'gotoXZ <x> <z>',
-      description: 'go from point A to point B, XZ',
-      callable: this.gotoXZFunc.bind(this),
-      allowedIf: CmdPerm.LINKED
-    },
 
-    pathstop: {
-      usage: 'pathstop',
-      description: 'Stop mineflayer-pathfinder',
-      callable: this.stop.bind(this),
-      allowedIf: CmdPerm.UNLINKED
+    pathing: {
+
+      goto: {
+        usage: '<x> <y> <z>',
+        description: 'go from point A to point B',
+        callable: this.gotoFunc.bind(this),
+        allowedIf: CmdPerm.LINKED
+      },
+  
+      gotoXZ: {
+        usage: '<x> <z>',
+        description: 'go from point A to point B, XZ',
+        callable: this.gotoXZFunc.bind(this),
+        allowedIf: CmdPerm.LINKED
+      },
+
+      pathstop: {
+        description: 'Stop mineflayer-pathfinder',
+        callable: this.stop.bind(this),
+        allowedIf: CmdPerm.UNLINKED
+      }
     }
   }
   

@@ -5,7 +5,7 @@ import { CommandMap } from "../../src"
 class NearestEntity extends ProxyServerPlugin {
   connectedCmds: CommandMap = {
     findEntity: {
-      usage: "findEntity <entity username/name>",
+      usage: "<entity username/name>",
       description: "Finds the nearest entity that matches naming",
       callable: this.findNearestEntity.bind(this),
     },
@@ -13,7 +13,7 @@ class NearestEntity extends ProxyServerPlugin {
 
   disconnectedCmds: CommandMap = {
     findEntity: {
-      usage: "findEntity <entity username/name>",
+      usage: "<entity username/name>",
       description: "Finds the nearest entity that matches naming",
       callable: this.findNearestEntity.bind(this),
     },

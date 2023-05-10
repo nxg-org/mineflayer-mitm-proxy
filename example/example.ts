@@ -21,7 +21,7 @@ const serverOpts: ServerOptions = {
 const server = new ServerBuilder(serverOpts, botOpts)
   // .addPlugin(new GotoPlacePlugin())
   .addPluginStatic(GotoPlacePlugin)
-  .addPlugin(findEntity)  
+  // .addPlugin(findEntity)  
   .build();
 
 server.start();

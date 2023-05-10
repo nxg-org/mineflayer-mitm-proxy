@@ -82,7 +82,7 @@ export abstract class ProxyServerPlugin<
     const test = listener;
     const wrapper = (...args: any[]) => {
       if (this._enabled) {
-        listener(...args);
+        listener.bind(this)(...args);
       }
     };
 
