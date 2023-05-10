@@ -557,6 +557,7 @@ export class ProxyServer<
   public unlink(client: Client): boolean {
     if (this.conn == null) throw new Error('Unlinking when remote connection is not present!')
     if (client !== this.controllingPlayer) return false;
+    this.emit("unlinking" as any, client);
     this.conn.unlink();
     this.beginBotLogic();
     return true;
@@ -568,6 +569,7 @@ export class ProxyServer<
   public link(client: Client): boolean {
     if (this.conn == null) throw new Error('Unlinking when remote connection is not present!')
     if (client === this.controllingPlayer) return false;
+    this.emit("linking" as any, client);
     this.endBotLogic();
     this.conn.link(client as unknown as ProxyClient);
     return true;

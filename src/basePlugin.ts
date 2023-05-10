@@ -212,4 +212,20 @@ export abstract class ProxyServerPlugin<
   public getShared<Value extends any>(key: string): Value | undefined {
     return this.server.getSharedData(key);
   }
+
+  /**
+   * Utility method to unlink client from the server.
+   * @param client 
+   */
+  public unlink(client: Client): void {
+    this.server.unlink(client);
+  }
+
+    /**
+   * Utility method to link client to the server.
+   * @param client 
+   */
+    public link(client: Client): void {
+      this.server.link(client);
+    }
 }
