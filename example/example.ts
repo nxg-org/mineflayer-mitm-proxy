@@ -1,10 +1,11 @@
 import { ServerOptions } from "minecraft-protocol";
 import { BotOptions } from "mineflayer";
 import { ServerBuilder } from "../src/baseServer";
-import { GotoPlacePlugin } from "./plugins/basicGoto";
+// import { GotoPlacePlugin } from "./plugins/basicGoto";
 import findEntity from "./plugins/findEntity";
 
 
+const GotoPlacePlugin = require('./plugins/basicGoto')
 
 const botOpts: BotOptions = {
   username: "generelSchwerz",
@@ -20,7 +21,7 @@ const serverOpts: ServerOptions = {
 
 const server = new ServerBuilder(serverOpts, botOpts)
   // .addPlugin(new GotoPlacePlugin())
-  .addPluginStatic(GotoPlacePlugin)
+  .addPlugin(GotoPlacePlugin)
   // .addPlugin(findEntity)  
   .build();
 

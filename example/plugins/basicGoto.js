@@ -38,101 +38,106 @@ class GotoPlacePlugin extends ProxyServerPlugin {
         description: 'Stop mineflayer-pathfinder',
         callable: this.stop.bind(this),
         allowedIf: CmdPerm.UNLINKED
+      },
+
+      resumeBotAuto: {
+        description: "Resume bot autonomy after pathfind",
+        callable: this.setResumeBot.bind(this)
       }
     }
   }
   
-  onInitialBotSetup = (bot) => {
+  onInitialBotSetup(bot) {
     bot.loadPlugin(pathfinder);
-  }
+  };
 
-  async stop (client) {
-    // these both exist due to how these commands are called.
-    const bot = this.server.remoteBot
-    const proxy = this.server.conn
-
-    bot.pathfinder.setGoal(null)
-    this.server.message(client, 'Stopped pathfinding!')
-    this.syncClientToBot(client, bot)
-    proxy.link(client)
-  }
-
-  async gotoFunc (client, x, y, z) {
-    // these both exist due to how these commands are called.
-    const bot = this.server.remoteBot
-
-    if (client !== this.server.controllingPlayer) {
-      this.server.message(client, 'You cannot cause the bot to go anywhere, you are not controlling it!')
-      return
+  setResumeBot(client, val) {
+    switch (val.toLowerCase()) {
+      case "true":
+        this.opts.resumeAutonomousActivity = true
+        this.server.message(client, `Resume bot activity after pathfinding has been set to true`)
+        break
+      case "false":
+        this.opts.resumeAutonomousActivity = false
+        this.server.message(client, `Resume bot activity after pathfinding has been set to false`)
+        break
+      default:
+        this.server.message(client, `Invalid entry \"${val}\". Needs to be true or false.`);
+        break
     }
-
-    const numX = (x === '~') ? bot.entity.position.x : Number(x)
-    const numY = (y === '~') ? bot.entity.position.y : Number(y)
-    const numZ = (z === '~') ? bot.entity.position.z : Number(z)
-
-    const goal = new goals.GoalBlock(numX, numY, numZ)
-
-    this.server.message(client, `Moving to: ${numX} ${numY} ${numZ}`)
-
-    await this.travelTo(client, goal)
   }
 
-  async gotoXZFunc (client, x, z, range) {
+  async stop(client) {
     // these both exist due to how these commands are called.
-    const bot = this.server.remoteBot
+    const bot = this.server.remoteBot;
+    bot.pathfinder.setGoal(null);
+    this.server.message(client, "Stopped pathfinding!");
+  }
 
-    if (client !== this.server.controllingPlayer) {
-      this.server.message(client, 'You cannot cause the bot to go anywhere, you are not controlling it!')
-      return
-    }
+  async gotoFunc(client, x, y, z) {
+    // these both exist due to how these commands are called.
+    const bot = this.server.remoteBot;
 
-    const numX = (x === '~') ? bot.entity.position.x : Number(x)
-    const numZ = (z === '~') ? bot.entity.position.z : Number(z)
-    const numRange = range ? Number(range) : 3
+    const numX = x === "~" ? bot.entity.position.x : Number(x);
+    const numY = y === "~" ? bot.entity.position.y : Number(y);
+    const numZ = z === "~" ? bot.entity.position.z : Number(z);
 
-    this.server.message(client, `Moving to: (${numX}, ${numZ}) w/ range ${numRange}`)
+    const goal = new goals.GoalBlock(numX, numY, numZ);
+
+    this.server.message(client, `Moving to: ${numX} ${numY} ${numZ}`);
+
+    await this.travelTo(client, goal);
+  }
+
+  async gotoXZFunc(client, x, z, range) {
+    // these both exist due to how these commands are called.
+    const bot = this.server.remoteBot;
+
+    const numX = x === "~" ? bot.entity.position.x : Number(x);
+    const numZ = z === "~" ? bot.entity.position.z : Number(z);
+    const numRange = range ? Number(range) : 3;
+
+    this.server.message(client, `Moving to: (${numX}, ${numZ}) w/ range ${numRange}`);
 
     // unlink client so bot can move
-    const goal = new goals.GoalNearXZ(numX, numZ, numRange)
-    await this.travelTo(client, goal)
+    const goal = new goals.GoalNearXZ(numX, numZ, numRange);
+    await this.travelTo(client, goal);
   }
 
-  async travelTo (client, goal) {
+  async travelTo(client, goal) {
     // these both exist due to how these commands are called.
-    const bot = this.server.remoteBot
-    const proxy = this.server.conn
+    const bot = this.server.remoteBot;
+    const isLinked = this.server.inControl(client);
 
-    proxy.unlink()
-
-    if (bot.pathfinder.isMoving()) {
-      bot.pathfinder.setGoal(null)
-    }
+    if (isLinked) this.unlink(client);
 
     try {
-      await bot.pathfinder.goto(goal)
-      this.server.message(client, 'Made it!')
-      this.serverLog('Pathfinder:goto_success')
+      await bot.pathfinder.goto(goal);
+      this.server.message(client, "Made it!");
+      this.serverLog("Pathfinder:goto_success");
     } catch (e) {
-      this.server.message(client, 'Did not make it...')
-      this.serverLog('Pathfinder:goto_failure', e)
-    }
-
-    // basic clean up, then we're all good :thumbsup:
-    finally {
-      this.syncClientToBot(client, bot)
-      proxy.link(client)
+      this.server.message(client, "Did not make it...");
+      this.serverLog("Pathfinder:goto_failure", e);
+    } finally {
+      if (isLinked) this.link(client);
+      else if (this.opts.resumeAutonomousActivity) this.server.beginBotLogic();
     }
   }
 
-  // sync client back to bot's position
-  syncClientToBot (client, bot) {
-    client.write('position', {
-      ...bot.entity.position,
+
+  // custom link method to sync back to remote instance.
+  link(client) {
+    const bot = this.server.remoteBot
+    client.write("position", {
+      x: bot.entity.position.x,
+      y: bot.entity.position.y,
+      z: bot.entity.position.z,
       yaw: bot.entity.yaw,
       pitch: bot.entity.pitch,
       onGround: bot.entity.onGround
     })
+    super.link(client);
   }
 }
 
-module.exports = { GotoPlacePlugin }
+module.exports = new  GotoPlacePlugin();
