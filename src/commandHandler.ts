@@ -6,8 +6,8 @@ import { sleep } from "./utils";
 import type { Vec3 } from "vec3";
 
 export enum CmdPerm {
-  LINKED = 1 << 0,
-  UNLINKED = 1 << 1,
+  LINKED    = 1 << 0,
+  UNLINKED  = 1 << 1,
 }
 
 interface CommandHandlerEvents {
@@ -59,19 +59,17 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
     this.prefix = prefix;
     this.loadProxyCommands({
       phelp: {
-        usage: "phelp",
         description: "This proxy help message",
         callable: this.printHelp,
       },
       pusage: {
-        usage: "pusage [cmd]",
+        usage: "<cmd>",
         description: "Gets the usage of a specific command",
         callable: this.printUsage,
       },
     });
     this.loadDisconnectedCommands({
       phelp: {
-        usage: "phelp",
         description: "This proxy help message",
         callable: this.printHelp,
       },
@@ -359,7 +357,7 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
 
         let toSend;
         if (cmd.usage) toSend = `§6${this._prefix}${key}: ${cmd.usage} |§r `
-        else toSend = `§6${key}: (No args) |§ r`
+        else toSend = `§6${key}: (No args) |§r `
         if (cmd.description) toSend += cmd.description;
         else toSend += "Unknown.";
 
