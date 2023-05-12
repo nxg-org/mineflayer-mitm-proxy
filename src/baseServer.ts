@@ -57,6 +57,8 @@ export type IProxyServerEvents = PrefixedBotEvents & {
   started: (conn: Conn) => void;
   stopping: () => void;
   stopped: () => void;
+  closing: () => void;
+  closed: () => void;
   restart: () => void;
 };
 
@@ -334,7 +336,7 @@ export class ProxyServer<
     if (this.isProxyConnected()) return this._conn!;
     this.manuallyStopped = false;
     this._conn = new Conn(this.bOpts, this.otherOpts.cOpts);
-    this.closeConnections('Starting the server!')
+    this.closeConnections('[MITM]: Starting the server!')
     // this.reconnectAllClients(this._conn);
     this.emit("starting" as any, this._conn as any);
     this.setup();
@@ -346,8 +348,15 @@ export class ProxyServer<
     if (!this.isProxyConnected()) return;
     this.emit("stopping" as any);
     this.manuallyStopped = true;
-    this.disconnectRemote("Proxy manually stopped.");
+    this.disconnectRemote("[MITM]: Proxy manually stopped.");
     this.emit("stopped" as any);
+  }
+
+  public close(): void {
+    this.emit("closing" as any);
+    this.disconnectRemote("[MITM] Proxy has been closed! Shutting down.");
+    this._rawServer.close();
+    this.emit("closed" as any);
   }
 
   public async restart(ms = 0) {
@@ -454,7 +463,7 @@ export class ProxyServer<
 
   protected disconnectRemote(reason: string) {
     if (this._conn != null) {
-      this._conn.stateData.bot._client.end("[2B2W]: " + reason);
+      this._conn.stateData.bot._client.end("[MITM]: " + reason);
       this._conn.pclients.forEach(this._conn.detach.bind(this._conn));
     }
   }

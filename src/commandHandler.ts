@@ -199,7 +199,6 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
   };
 
   manualRun(cmd: string, client: Client, ...args: any[]) {
-    if (!cmd.startsWith(this.prefix)) cmd = this.prefix + cmd;
     const cmdRunner = this.getActiveCmds(client);
     const cmdFunc = cmdRunner[cmd];
     if (cmdFunc) this.executeCmd(cmdFunc, client, ...args);
