@@ -340,7 +340,7 @@ export class ProxyServer<
     // this.reconnectAllClients(this._conn);
     this.emit("starting" as any, this._conn as any);
     this.setup();
-    this.emit("started" as any);
+    this.emit("started" as any, this._conn as any);
     return this._conn;
   }
 
