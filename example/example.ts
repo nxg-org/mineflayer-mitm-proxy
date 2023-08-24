@@ -10,12 +10,12 @@ const GotoPlacePlugin = require('./plugins/basicGoto')
 const botOpts: BotOptions = {
   username: "generelSchwerz",
   auth: "microsoft",
-  host: "localhost",
-  version: "1.12.2",
+  host: "2b2t.org",
+  version: "1.19.4",
 };
 
 const serverOpts: ServerOptions = {
-  version: "1.12.2",
+  version: "1.19.4",
   port: 25566
 };
 
