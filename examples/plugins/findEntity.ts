@@ -37,4 +37,4 @@ class NearestEntity extends ProxyServerPlugin {
   }
 }
 
-export default new NearestEntity();
+export default NearestEntity;

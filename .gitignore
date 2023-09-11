@@ -2,3 +2,4 @@ lib/
 logs/
 yarn*
 node_modules/
+compiled.js

@@ -140,4 +140,4 @@ class GotoPlacePlugin extends ProxyServerPlugin {
   }
 }
 
-module.exports = new  GotoPlacePlugin();
+module.exports = GotoPlacePlugin;

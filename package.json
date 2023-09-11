@@ -16,7 +16,8 @@
     "minecraft-protocol": "^1.41.2",
     "strict-event-emitter-types": "^2.0.0",
     "ts-deepmerge": "^6.0.3",
-    "ts-luxon": "^4.2.2"
+    "ts-luxon": "^4.2.2",
+    "ts-node": "^10.9.1"
   },
   "devDependencies": {
     "mineflayer-pathfinder": "^2.4.2",
