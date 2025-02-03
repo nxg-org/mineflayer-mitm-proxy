@@ -6,8 +6,8 @@ import { sleep } from "./utils";
 import type { Vec3 } from "vec3";
 
 export enum CmdPerm {
-  LINKED    = 1 << 0,
-  UNLINKED  = 1 << 1,
+  LINKED = 1 << 0,
+  UNLINKED = 1 << 1,
 }
 
 interface CommandHandlerEvents {
@@ -37,7 +37,7 @@ function isMapGroup(cmdInfo: CommandMap | CommandInfo): cmdInfo is CommandMap {
 }
 
 export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitter<CommandHandlerEvents> {
-  private _prefix: string = "/";
+  private _prefix: string;
 
   private readonly mostRecentTab: Map<string, string> = new Map();
 
@@ -51,12 +51,12 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
 
   constructor(
     private readonly srv: Server,
-    prefix: string = "/",
+    prefix: string = "!",
     public readonly proxyCmds: CommandMap = {},
     public readonly disconnectedCmds: CommandMap = {}
   ) {
     super();
-    this.prefix = prefix;
+    this._prefix = prefix;
     this.loadProxyCommands({
       phelp: {
         description: "This proxy help message",
@@ -187,7 +187,8 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
 
   proxyCommandHandler: PacketMiddleware = async ({ meta, data, pclient }) => {
     if (this.srv.proxy == null || pclient == null) return;
-    if (meta.name !== "chat") return;
+    const key = this.srv.refData.supportFeature("signedChat") ? "chat_message" : "chat"
+    if (meta.name !== key) return;
     const cmds: string[] = data.message.split("|");
     return await this.commandHandler(pclient, ...cmds);
   };
@@ -264,11 +265,7 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
     return data;
   };
 
-  unlinkedTabCompleteHandler = (
-    client: Client,
-    data: { text: string; assumeCommand: boolean; lookedAtBlock: Vec3 },
-    meta: PacketMeta
-  ) => {
+  unlinkedTabCompleteHandler = (client: Client, data: { text: string; assumeCommand: boolean; lookedAtBlock: Vec3 }, meta: PacketMeta) => {
     if (this.srv.isProxyConnected()) return;
     const text = data.text.replace(this.prefix, "");
     const matches = [];
@@ -283,34 +280,35 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
     client.write("tab_complete", { matches });
   };
 
+
   updateClientCmds(client: ProxyClient) {
+
     this.srv.proxy?.attach(client as any, {
-      toServerMiddleware: [
-        ...(client.toServerMiddlewares ?? []),
-        this.proxyCommandHandler,
-        this.proxyTabCompleteListener,
-      ],
-      toClientMiddleware: [...(client.toClientMiddlewares ?? []), this.proxyTabCompleteIntercepter],
+      toServerMiddleware: [...(client.toServerMiddlewares ?? []), this.proxyCommandHandler, /*this.proxyTabCompleteListener*/],
+      // toClientMiddleware: [...(client.toClientMiddlewares ?? []), this.proxyTabCompleteIntercepter],
     });
 
     (client as any).disconnectedChatHandlerFunc = async (...args: [data: any, meta: PacketMeta]) =>
       await this.unlinkedChatHandler(client, ...args);
     (client as any).disconnectedTabCompleteFunc = (...args: [data: any, meta: PacketMeta]) =>
       this.unlinkedTabCompleteHandler(client, ...args);
-    client.on("chat", (client as any).disconnectedChatHandlerFunc);
-    client.on("tab_complete" as any, (client as any).disconnectedTabCompleteFunc);
+
+    const key = this.srv.refData.supportFeature("signedChat") ? "chat_message" : "chat"
+    client.on(key, (client as any).disconnectedChatHandlerFunc);
+    // client.on("tab_complete" as any, (client as any).disconnectedTabCompleteFunc);
   }
 
   // April 5th: it's late, this is bad code but whatever.
   decoupleClientCmds(client: ProxyClient) {
     this.srv.proxy?.detach(client);
     if ((client as any).disconnectedChatHandlerFunc) {
-      client.off("chat", (client as any).disconnectedChatHandlerFunc);
+      const key = this.srv.refData.supportFeature("signedChat") ? "chat_message" : "chat"
+      client.off(key, (client as any).disconnectedChatHandlerFunc);
     }
 
-    if ((client as any).disconnectedTabCompleteFunc) {
-      client.off("tab_complete" as any, (client as any).disconnectedTabCompleteFunc);
-    }
+    // if ((client as any).disconnectedTabCompleteFunc) {
+    //   client.off("tab_complete" as any, (client as any).disconnectedTabCompleteFunc);
+    // }
   }
 
   isCmd(cmd: string): boolean {
@@ -340,7 +338,7 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
   };
 
   public printUsage = (client: ServerClient | Client, ...wantedCmds: string[]) => {
-    const wantedCmd = wantedCmds.join(' ');
+    const wantedCmd = wantedCmds.join(" ");
     const cmdRunner = this.getActiveCmds(client, true);
     const cmds = this.findCmdsContaining(cmdRunner, wantedCmd);
     if (cmds.length === 0) return this.srv.message(client, "Cannot find command!");
@@ -355,8 +353,8 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
         }
 
         let toSend;
-        if (cmd.usage) toSend = `§6${this._prefix}${key}: ${cmd.usage} |§r `
-        else toSend = `§6${key}: (No args) |§r `
+        if (cmd.usage) toSend = `§6${this._prefix}${key}: ${cmd.usage} |§r `;
+        else toSend = `§6${key}: (No args) |§r `;
         if (cmd.description) toSend += cmd.description;
         else toSend += "Unknown.";
 

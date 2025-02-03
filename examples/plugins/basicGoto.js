@@ -82,10 +82,14 @@ class GotoPlacePlugin extends ProxyServerPlugin {
     const numY = y === "~" ? bot.entity.position.y : Number(y);
     const numZ = z === "~" ? bot.entity.position.z : Number(z);
 
-    const goal = new goals.GoalBlock(numX, numY, numZ);
+
+    if (isNaN(numX) || isNaN(numY) || isNaN(numZ)) {
+      this.server.message(client, `Coords are invalid: ${numX} ${numY} ${numZ}`);
+      return;
+    }
 
     this.server.message(client, `Moving to: ${numX} ${numY} ${numZ}`);
-
+    const goal = new goals.GoalBlock(numX, numY, numZ);
     await this.travelTo(client, goal);
   }
 
@@ -97,9 +101,12 @@ class GotoPlacePlugin extends ProxyServerPlugin {
     const numZ = z === "~" ? bot.entity.position.z : Number(z);
     const numRange = range ? Number(range) : 3;
 
-    this.server.message(client, `Moving to: (${numX}, ${numZ}) w/ range ${numRange}`);
+    if (isNaN(numX) || isNaN(numZ) || isNaN(numRange)) {
+      this.server.message(client, `Settings are invalid: ${numX} ${numZ} ${numRange}`);
+      return;
+    }
 
-    // unlink client so bot can move
+    this.server.message(client, `Moving to: ${numX} ${numZ} with range ${numRange}`);
     const goal = new goals.GoalNearXZ(numX, numZ, numRange);
     await this.travelTo(client, goal);
   }

@@ -180,7 +180,6 @@ export class FakeBotEntity {
 
   public onLinkedMove = (pos: Vec3) => {
     this.entityRef.syncToEntityPos(this.linkedEntity);
-
     this.writeAll("entity_teleport", {
       entityId: this.entityRef.id,
       ...this.entityRef.knownPosition,
@@ -188,6 +187,7 @@ export class FakeBotEntity {
       pitch: this.entityRef.intPitch,
       onGround: this.entityRef.onGround,
     });
+    
     this.writeAll("entity_look", {
       entityId: this.entityRef.id,
       yaw: this.entityRef.intYaw,

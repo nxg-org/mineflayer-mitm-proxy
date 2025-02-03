@@ -30,4 +30,6 @@ const server = new ServerBuilder(serverOpts, botOpts)
 
 server.start();
 
+
+
 const test = server.getPlugin("GotoPlacePlugin")
