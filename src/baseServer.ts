@@ -1,4 +1,4 @@
-import { Client as ProxyClient, Conn, ConnOptions } from "@icetank/mcproxy";
+import { Client as ProxyClient, Conn, ConnOptions } from "@GenerelSchwerz/mcproxy";
 import { Client, createServer, Server, ServerClient, ServerOptions } from "minecraft-protocol";
 import { Bot, BotEvents, BotOptions } from "mineflayer";
 import { ChatMessage as AgnogChMsg } from "prismarine-chat";
@@ -206,7 +206,7 @@ export class ProxyServer<
         return this._remoteIsConnected;
     }
 
-    public get refData(): Registry {
+    public get refData(): Bot["registry"] {
         if (this._remoteIsConnected) return this.remoteBot!.registry;
         return this._cachedData;
     }

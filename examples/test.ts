@@ -11,12 +11,12 @@ const botOpts: BotOptions = {
   auth: "offline",
   host: process.argv[2] ?? "2b2t.org",
   port: isNaN(Number(process.argv[3])) ? 25565 : Number(process.argv[3]),
-  version: process.argv[4] ?? "1.19.4",
+  version: process.argv[4] ?? "1.21.1",
   skipValidation: true
 };
 
 const serverOpts: ServerOptions = {
-  version: process.argv[4] ?? "1.19.4",
+  version: process.argv[4] ?? "1.21.1",
   port: 25566
 };
 
@@ -29,6 +29,11 @@ const server = new ServerBuilder(serverOpts, botOpts)
   .build();
 
 server.start();
+
+
+server.on("playerConnected", (client) => {
+  console.log(`Player connected: ${client}`);
+})
 
 
 

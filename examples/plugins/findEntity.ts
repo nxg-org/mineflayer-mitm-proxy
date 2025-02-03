@@ -1,4 +1,4 @@
-import { Client } from "@icetank/mcproxy";
+import { Client } from "@GenerelSchwerz/mcproxy";
 import { ProxyServerPlugin } from "../../src";
 import { CommandMap } from "../../src"
 

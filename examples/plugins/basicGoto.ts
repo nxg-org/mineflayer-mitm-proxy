@@ -1,4 +1,4 @@
-import { Client } from "@icetank/mcproxy"
+import { Client } from "@GenerelSchwerz/mcproxy"
 import { CmdPerm, CommandMap } from "../../src/commandHandler"
 import { ProxyServerPlugin } from "../../src/basePlugin"
 import {goals } from 'mineflayer-pathfinder'

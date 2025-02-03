@@ -3,3 +3,4 @@ logs/
 yarn*
 node_modules/
 compiled.js
+commands.json

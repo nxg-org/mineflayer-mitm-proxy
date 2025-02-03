@@ -11,7 +11,7 @@
     "postinstall": "npm run build"
   },
   "dependencies": {
-    "@icetank/mcproxy": "IceTank/mcproxy#1-19",
+    "@GenerelSchwerz/mcproxy": "GenerelSchwerz/mcproxy#1.21",
     "eventemitter2": "^6.4.9",
     "minecraft-protocol": "^1.41.2",
     "strict-event-emitter-types": "^2.0.0",

@@ -1,7 +1,7 @@
 // TODO: Separate plugins into "emitters" and "listeners"
 // "emitters" provide custom events, "listeners" do not (can listen to custom though)
 
-import { Conn } from "@icetank/mcproxy";
+import { Conn } from "@GenerelSchwerz/mcproxy";
 import { Client, ServerClient } from "minecraft-protocol";
 import { Bot } from "mineflayer";
 import merge from "ts-deepmerge";
