@@ -444,7 +444,7 @@ export class ProxyServer<
                 actualUser.off("state", listener);
             }  
         }
-        actualUser.once("state", listener)
+        actualUser.on("state", listener)
     };
 
     protected async remoteClientDisconnect(reason: string, info: string | Error) {
