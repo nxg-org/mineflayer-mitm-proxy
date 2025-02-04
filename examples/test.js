@@ -14,6 +14,8 @@ const botOpts = {
 const serverOpts = {
   version: "1.21.1",
   port: 25566,
+  "online-mode": false,
+  
 };
 
 const server = new ServerBuilder(serverOpts, botOpts)

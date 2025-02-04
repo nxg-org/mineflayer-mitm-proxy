@@ -1,5 +1,5 @@
 import { Client as ProxyClient, Conn, ConnOptions } from "@GenerelSchwerz/mcproxy";
-import { Client, createServer, Server, ServerClient, ServerOptions } from "minecraft-protocol";
+import { Client, createServer, Server, ServerClient, ServerOptions, States } from "minecraft-protocol";
 import { Bot, BotEvents, BotOptions } from "mineflayer";
 import { ChatMessage as AgnogChMsg } from "prismarine-chat";
 import { ProxyServerPlugin } from "./basePlugin";
@@ -235,6 +235,7 @@ export class ProxyServer<
             usage: "pstart",
             callable: this.start.bind(this),
         });
+
         this._rawServer.on("login", this.loginHandler);
 
         // debugging magick.
@@ -430,13 +431,20 @@ export class ProxyServer<
         this.emit("botControlled" as any, this.remoteBot, this.psOpts);
     };
 
+    // 1.21 update to ensure packets sent only occur when client is ready to receive.
     private readonly loginHandler = (actualUser: ServerClient) => {
-        this.emit("playerConnected" as any, actualUser, this.isProxyConnected());
-        actualUser.once("end", () => this.emit("playerDisconnected" as any, actualUser));
-
-        this.cmdHandler.updateClientCmds(actualUser as unknown as ProxyClient);
-        if (this.isProxyConnected()) this.whileConnectedLoginHandler(actualUser);
-        else this.notConnectedLoginHandler(actualUser);
+        const listener = (now: States)  => {
+            if (now === "play") {
+                this.emit("playerConnected" as any, actualUser, this.isProxyConnected());
+                actualUser.once("end", () => this.emit("playerDisconnected" as any, actualUser));
+        
+                this.cmdHandler.updateClientCmds(actualUser as unknown as ProxyClient);
+                if (this.isProxyConnected()) this.whileConnectedLoginHandler(actualUser);
+                else this.notConnectedLoginHandler(actualUser);
+                actualUser.off("state", listener);
+            }  
+        }
+        actualUser.once("state", listener)
     };
 
     protected async remoteClientDisconnect(reason: string, info: string | Error) {
