@@ -557,8 +557,24 @@ export class ProxyServer<
 
     sendMessage(client: ServerClient | Client, message: string, position: number = 1) {
         const messageObj = new this.ChatMessage(message);
-        const key = this.refData.supportFeature("signedChat") ? "system_chat" : "chat";
-        client.write(key, { content: messageObj.json.toString(), position });
+        let packet: any = {};
+        console.log(messageObj);
+        let key: string;
+        if (this.refData.supportFeature("signedChat")) {
+            if (this.refData.supportFeature("incrementedChatType")) {
+                key = 'profileless_chat';
+                packet.message = { type: "string", value: "message"};
+                packet.type = {registryIndex: 5}
+                packet.name = { type: "string", value: ""}
+            } else {
+                key = "system_chat"
+                packet = { content: messageObj.json.toString(), position }
+            }
+        } else {
+            key = "chat";
+            packet = { message: messageObj.json.toString(), position };
+        }
+        client.write(key, packet);
     }
 
     broadcastMessage(message: string, prefix: boolean = true, allowFormatting?: boolean, position?: number) {
