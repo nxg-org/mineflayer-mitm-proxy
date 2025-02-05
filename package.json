@@ -11,6 +11,7 @@
     "postinstall": "npm run build"
   },
   "dependencies": {
+    "@generelschwerz/mcproxy": "GenerelSchwerz/mcproxy#1.21",
     "eventemitter2": "^6.4.9",
     "minecraft-protocol": "^1.41.2",
     "ts-deepmerge": "^6.0.3",
@@ -18,9 +19,9 @@
     "ts-node": "^10.9.1"
   },
   "devDependencies": {
+    "mineflayer": "^4.26.0",
     "mineflayer-pathfinder": "^2.4.2",
     "strict-event-emitter-types": "^2.0.0",
-    "mineflayer": "^4.26.0",
     "typescript": "^5.0.4"
   }
 }
