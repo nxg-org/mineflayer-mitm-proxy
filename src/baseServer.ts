@@ -558,7 +558,6 @@ export class ProxyServer<
     sendMessage(client: ServerClient | Client, message: string, position: number = 1) {
         const messageObj = new this.ChatMessage(message);
         let packet: any = {};
-        console.log(messageObj);
         let key: string;
         if (this.refData.supportFeature("signedChat")) {
             if (this.refData.supportFeature("incrementedChatType")) {
