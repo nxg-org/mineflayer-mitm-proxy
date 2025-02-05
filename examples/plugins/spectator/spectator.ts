@@ -1,5 +1,5 @@
 import { ProxyServerPlugin, CommandMap, CmdPerm } from "../../../src";
-import { Client as ProxyClient, Conn, PacketMiddleware } from "@GenerelSchwerz/mcproxy";
+import { Client as ProxyClient, Conn, PacketMiddleware } from "@generelschwerz/mcproxy";
 import { Client } from "minecraft-protocol";
 import { WorldManager } from "./spectatorUtils";
 import { FakeBotEntity, GhostHandler } from "./fakes";
@@ -38,7 +38,7 @@ export class SpectatorServerPlugin extends ProxyServerPlugin<SpectatorServerOpts
     c: {
       usage: "<string>",
       description: "Chat with other players connected to your proxy",
-      callable: (client, ...args) => this.server.broadcastMessage(`[${client.username}] ${args.join(" ")}`),
+      callable: (client, ...args) => this.server.broadcastMessage(args.join(" "), client.username),
     },
 
     stopbot: {
