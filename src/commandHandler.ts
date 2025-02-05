@@ -322,7 +322,7 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
     cmds = cmds.filter(([key, val]) => key.startsWith(subcategories.join(" ")));
     cmds.sort();
 
-    this.srv.message(client, "§6---------- Proxy Commands: ------------- ", false);
+    this.srv.message(client,  "§6---------- Proxy Commands: ------------- ", "Server", false);
     for (const [cmdKey, cmd] of cmds) {
       let toSend;
       if (cmd instanceof Function) {
@@ -333,7 +333,7 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
         else toSend += "Unknown.";
       }
 
-      this.srv.message(client, toSend, false);
+      this.srv.message(client, toSend, "Server", false);
     }
   };
 
@@ -342,13 +342,13 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
     const cmdRunner = this.getActiveCmds(client, true);
     const cmds = this.findCmdsContaining(cmdRunner, wantedCmd);
     if (cmds.length === 0) return this.srv.message(client, "Cannot find command!");
-    this.srv.message(client, "§6---------- Proxy Command Usage: ------------- ", false);
+    this.srv.message(client, "§6---------- Proxy Command Usage: ------------- ", "Server", false);
     for (const [key, cmd] of cmds) {
       if (cmd instanceof Function) {
-        this.srv.message(client, `Usage of ${key} is unknown, assume no arguments!`, false);
+        this.srv.message(client, `Usage of ${key} is unknown, assume no arguments!` , "Server", false);
       } else {
         if (cmd.usage == null && cmd.description == null) {
-          this.srv.message(client, `Usage of ${key} is unknown, assume no arguments!`, false);
+          this.srv.message(client, `Usage of ${key} is unknown, assume no arguments!`, "Server", false);
           return;
         }
 
@@ -358,7 +358,7 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
         if (cmd.description) toSend += cmd.description;
         else toSend += "Unknown.";
 
-        this.srv.message(client, toSend, false);
+        this.srv.message(client, toSend, "Server", false);
       }
     }
   };

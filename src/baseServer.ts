@@ -549,36 +549,38 @@ export class ProxyServer<
     //     message utils       //
     // ======================= //
 
-    message(client: Client, message: string, prefix: boolean = true, allowFormatting: boolean = true, position: number = 1) {
+    message(client: Client, message: string, username: string = "System", prefix: boolean = true, allowFormatting: boolean = true, position: number = 1) {
         if (!allowFormatting) message = message.replaceAll(/§./, "");
         if (prefix && this.psOpts.proxyChatPrefix) message = this.psOpts.proxyChatPrefix + message;
-        this.sendMessage(client, message, position);
+        this.sendMessage(client, username, message, position);
     }
 
-    sendMessage(client: ServerClient | Client, message: string, position: number = 1) {
-        const messageObj = new this.ChatMessage(message);
+    sendMessage(client: ServerClient | Client, username: string, message: string, position: number = 1) {
+        
         let packet: any = {};
         let key: string;
         if (this.refData.supportFeature("signedChat")) {
             if (this.refData.supportFeature("incrementedChatType")) {
                 key = 'profileless_chat';
-                packet.message = { type: "string", value: "message"};
+                packet.message = { type: "string", value: message};
                 packet.type = {registryIndex: 5}
                 packet.name = { type: "string", value: ""}
             } else {
+                const messageObj = new this.ChatMessage(`[${username}]: ${message}`);
                 key = "system_chat"
                 packet = { content: messageObj.json.toString(), position }
             }
         } else {
+            const messageObj = new this.ChatMessage(`[${username}]: ${message}`);
             key = "chat";
             packet = { message: messageObj.json.toString(), position };
         }
         client.write(key, packet);
     }
 
-    broadcastMessage(message: string, prefix: boolean = true, allowFormatting?: boolean, position?: number) {
+    broadcastMessage(message: string, username: string = "System", prefix: boolean = true, allowFormatting?: boolean, position?: number) {
         Object.values(this._rawServer.clients).forEach((c) => {
-            this.message(c, message, prefix, allowFormatting, position);
+            this.message(c, message, username, prefix, allowFormatting, position);
         });
     }
 
