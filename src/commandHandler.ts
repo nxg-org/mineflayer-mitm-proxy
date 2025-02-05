@@ -51,7 +51,7 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
 
   constructor(
     private readonly srv: Server,
-    prefix: string = "!",
+    prefix: string = "",
     public readonly proxyCmds: CommandMap = {},
     public readonly disconnectedCmds: CommandMap = {}
   ) {
@@ -162,8 +162,10 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
   commandHandler = async (client: Client, ...cmds: string[]) => {
     const allowedCmds = this.getActiveCmds(client);
     if (cmds.length === 1) {
+      console.log('cmd', allowedCmds, this.prefix)
       if (!cmds[0].startsWith(this.prefix)) return client === this.srv.controllingPlayer;
       const [cmdFunc, args] = this.findCmd(allowedCmds, cmds[0].replace(this.prefix, ""));
+      console.log('cmd', cmdFunc, args)
       if (cmdFunc) this.executeCmd(cmdFunc, client, ...args);
       return !cmdFunc;
     } else {

@@ -154,7 +154,7 @@ export class ProxyServer<
 > extends TypedEventEmitter<Events> {
     protected readonly plugins: Map<string, ProxyServerPlugin<IProxyServerOpts, IProxyServerEvents>> = new Map();
     protected readonly pluginStorage: Map<string, any> = new Map();
-    protected readonly cmdHandler: CommandHandler<ProxyServer<Opts, Events>>;
+    protected readonly _cmdHandler: CommandHandler<ProxyServer<Opts, Events>>;
     protected readonly _rawServer: Server;
 
     protected _conn: Conn | null;
@@ -174,6 +174,10 @@ export class ProxyServer<
 
     public get rawServer(): Server {
         return this._rawServer;
+    }
+
+    public get cmdHandler(): CommandHandler<ProxyServer<Opts, Events>> {
+        return this._cmdHandler;
     }
 
     public get proxy(): Conn | null {
@@ -224,13 +228,13 @@ export class ProxyServer<
         this._foundVersion = (this._rawServer as any).mcversion.minecraftVersion;
         this._cachedData = prisLoader(this._foundVersion) as any; // TODO: fix broken typings
         this.ChatMessage = require("prismarine-chat")(this._foundVersion);
-        this.cmdHandler = new CommandHandler(this);
-        this.cmdHandler.loadProxyCommand("pstop", {
+        this._cmdHandler = new CommandHandler(this);
+        this._cmdHandler.loadProxyCommand("pstop", {
             description: "stops the server",
             usage: "pstop",
             callable: this.stop.bind(this),
         });
-        this.cmdHandler.loadDisconnectedCommand("pstart", {
+        this._cmdHandler.loadDisconnectedCommand("pstart", {
             description: "starts the server",
             usage: "pstart",
             callable: this.start.bind(this),
@@ -268,11 +272,11 @@ export class ProxyServer<
         inserting.onLoad(this as any);
         this.plugins.set(inserting.constructor.name, inserting as any);
         if (inserting.universalCmds != null) {
-            this.cmdHandler.loadProxyCommands(inserting.universalCmds);
-            this.cmdHandler.loadDisconnectedCommands(inserting.universalCmds);
+            this._cmdHandler.loadProxyCommands(inserting.universalCmds);
+            this._cmdHandler.loadDisconnectedCommands(inserting.universalCmds);
         }
-        if (inserting.connectedCmds != null) this.cmdHandler.loadProxyCommands(inserting.connectedCmds);
-        if (inserting.disconnectedCmds != null) this.cmdHandler.loadDisconnectedCommands(inserting.disconnectedCmds);
+        if (inserting.connectedCmds != null) this._cmdHandler.loadProxyCommands(inserting.connectedCmds);
+        if (inserting.disconnectedCmds != null) this._cmdHandler.loadDisconnectedCommands(inserting.disconnectedCmds);
 
         return this as any;
     }
@@ -333,7 +337,7 @@ export class ProxyServer<
     }
 
     public runCmd(client: Client, cmd: string, ...args: string[]) {
-        this.cmdHandler.manualRun(cmd, client, ...args);
+        this._cmdHandler.manualRun(cmd, client, ...args);
     }
 
     public start(): Conn {
@@ -438,7 +442,7 @@ export class ProxyServer<
                 this.emit("playerConnected" as any, actualUser, this.isProxyConnected());
                 actualUser.once("end", () => this.emit("playerDisconnected" as any, actualUser));
         
-                this.cmdHandler.updateClientCmds(actualUser as unknown as ProxyClient);
+                this._cmdHandler.updateClientCmds(actualUser as unknown as ProxyClient);
                 if (this.isProxyConnected()) this.whileConnectedLoginHandler(actualUser);
                 else this.notConnectedLoginHandler(actualUser);
                 actualUser.off("state", listener);
@@ -564,7 +568,7 @@ export class ProxyServer<
                 key = 'profileless_chat';
                 packet.message = { type: "string", value: message};
                 packet.type = {registryIndex: 5}
-                packet.name = { type: "string", value: ""}
+                packet.name = { type: "string", value: username}
             } else {
                 const messageObj = new this.ChatMessage(`[${username}]: ${message}`);
                 key = "system_chat"
