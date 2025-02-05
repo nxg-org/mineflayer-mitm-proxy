@@ -1,11 +1,11 @@
 // TODO: Separate plugins into "emitters" and "listeners"
 // "emitters" provide custom events, "listeners" do not (can listen to custom though)
 
-import { Conn } from "@GenerelSchwerz/mcproxy";
+import { Conn } from "@generelschwerz/mcproxy";
 import { Client, ServerClient } from "minecraft-protocol";
-import { Bot } from "mineflayer";
+import type { Bot } from "mineflayer";
 import merge from "ts-deepmerge";
-import { Arguments } from "typed-emitter";
+import type { Arguments } from "typed-emitter";
 import { IProxyServerEvents, IProxyServerOpts, ProxyServer } from "./baseServer";
 import { CommandMap } from "./commandHandler";
 

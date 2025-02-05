@@ -1,5 +1,6 @@
 const { ServerBuilder } = require('../lib/baseServer');
 const GotoPlacePlugin  = require('./plugins/basicGoto');
+const SpectatorPlugin = require('./plugins/spectator');
 // const { default: findEntity } = require('./plugins/findEntity');
 
 console.log(GotoPlacePlugin)
@@ -19,6 +20,7 @@ const serverOpts = {
 
 const server = new ServerBuilder(serverOpts, botOpts)
   .addPlugin(new GotoPlacePlugin())
+  addPlugin(new SpectatorPlugin())
   // .addPlugin(findEntity)
   .setSettings({})
   .build();

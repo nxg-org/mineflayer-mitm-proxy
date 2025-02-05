@@ -1,4 +1,4 @@
-import { Client as ProxyClient, Conn, ConnOptions } from "@GenerelSchwerz/mcproxy";
+import { Client as ProxyClient, Conn, ConnOptions } from "@generelschwerz/mcproxy";
 import { Client, createServer, Server, ServerClient, ServerOptions, States } from "minecraft-protocol";
 import { Bot, BotEvents, BotOptions } from "mineflayer";
 import { ChatMessage as AgnogChMsg } from "prismarine-chat";
@@ -15,6 +15,7 @@ type Registry = ReturnType<typeof prisLoader> & { supportFeature: (feature: stri
  */
 export interface IProxyServerOpts {
     proxyChatPrefix?: string;
+    cmdPrefix?: string;
 
     /**
      * Disconnect all connected players once the proxy bot stops.
@@ -228,7 +229,7 @@ export class ProxyServer<
         this._foundVersion = (this._rawServer as any).mcversion.minecraftVersion;
         this._cachedData = prisLoader(this._foundVersion) as any; // TODO: fix broken typings
         this.ChatMessage = require("prismarine-chat")(this._foundVersion);
-        this._cmdHandler = new CommandHandler(this);
+        this._cmdHandler = new CommandHandler(this, psOpts.cmdPrefix);
         this._cmdHandler.loadProxyCommand("pstop", {
             description: "stops the server",
             usage: "pstop",

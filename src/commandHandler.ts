@@ -1,7 +1,7 @@
 import { TypedEventEmitter } from "./types";
 import { ProxyServer } from "./baseServer";
 import { PacketMeta, ServerClient, Client } from "minecraft-protocol";
-import { Client as ProxyClient, PacketMiddleware } from "@GenerelSchwerz/mcproxy";
+import { Client as ProxyClient, PacketMiddleware } from "@generelschwerz/mcproxy";
 import { sleep } from "./utils";
 import type { Vec3 } from "vec3";
 
@@ -162,10 +162,8 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
   commandHandler = async (client: Client, ...cmds: string[]) => {
     const allowedCmds = this.getActiveCmds(client);
     if (cmds.length === 1) {
-      console.log('cmd', allowedCmds, this.prefix)
       if (!cmds[0].startsWith(this.prefix)) return client === this.srv.controllingPlayer;
       const [cmdFunc, args] = this.findCmd(allowedCmds, cmds[0].replace(this.prefix, ""));
-      console.log('cmd', cmdFunc, args)
       if (cmdFunc) this.executeCmd(cmdFunc, client, ...args);
       return !cmdFunc;
     } else {
@@ -290,8 +288,8 @@ export class CommandHandler<Server extends ProxyServer> extends TypedEventEmitte
       // toClientMiddleware: [...(client.toClientMiddlewares ?? []), this.proxyTabCompleteIntercepter],
     });
 
-    (client as any).disconnectedChatHandlerFunc = async (...args: [data: any, meta: PacketMeta]) =>
-      await this.unlinkedChatHandler(client, ...args);
+    (client as any).disconnectedChatHandlerFunc = (...args: [data: any, meta: PacketMeta]) =>
+      this.unlinkedChatHandler(client, ...args);
     (client as any).disconnectedTabCompleteFunc = (...args: [data: any, meta: PacketMeta]) =>
       this.unlinkedTabCompleteHandler(client, ...args);
 

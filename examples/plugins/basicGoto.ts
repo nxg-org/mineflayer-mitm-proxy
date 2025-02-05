@@ -1,4 +1,4 @@
-import { Client } from "@GenerelSchwerz/mcproxy"
+import { Client } from "@generelschwerz/mcproxy"
 import { CmdPerm, CommandMap } from "../../src/commandHandler"
 import { ProxyServerPlugin } from "../../src/basePlugin"
 import {goals } from 'mineflayer-pathfinder'
@@ -14,7 +14,7 @@ import { ServerClient } from "minecraft-protocol"
  *
  * I will include this plugin in the main project as a POC.
  *
- * Note: this does not leverage the spectator setting present in most of the proxy.
+ * Note: this does not leverage the spectator setting present in most of the super.
  *  That is because that is a separate plugin. That is intentional.
  *  This is purposefully simple so it can be easy to follow.
  *
@@ -50,7 +50,7 @@ export class GotoPlacePlugin extends ProxyServerPlugin {
     bot.pathfinder.setGoal(null)
     this.server.message(client, 'Stopped pathfinding!')
     this.syncClientToBot(client, bot)
-    proxy.link(client)
+    super.link(client)
   }
 
   async gotoFunc (client: Client, x: string, y: string, z: string) {
@@ -98,7 +98,7 @@ export class GotoPlacePlugin extends ProxyServerPlugin {
     const bot = this.server.remoteBot!
     const proxy = this.server.conn!
 
-    proxy.unlink()
+    super.unlink(client)
 
     if (bot.pathfinder.isMoving()) {
       bot.pathfinder.setGoal(null)
@@ -116,7 +116,7 @@ export class GotoPlacePlugin extends ProxyServerPlugin {
     // basic clean up, then we're all good :thumbsup:
     finally {
       this.syncClientToBot(client, bot)
-      proxy.link(client)
+      super.link(client)
     }
   }
 

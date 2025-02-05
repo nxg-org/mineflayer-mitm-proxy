@@ -1,6 +1,6 @@
 // import mcproxy, replace ".."
 // with "@rob9315/mcproxy" in your project
-const mcproxy = require('@GenerelSchwerz/mcproxy');
+const mcproxy = require('@generelschwerz/mcproxy');
 const minecraft_protocol = require('minecraft-protocol');
 
 const VERSION = '1.21.1';
